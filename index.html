@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Profile: Luiz Gabriel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Corporate Warmth (Stone/Slate/Navy) -->
+    <!-- Application Structure Plan: 
+         Designed as a "Professional Dashboard" rather than a linear document.
+         - Header: Immediate value proposition and contact info.
+         - Navigation: Tab-based interface to allow non-linear exploration of 4 key dimensions:
+           1. Overview: Executive summary and key highlights (The "Elevator Pitch").
+           2. Journey (Experience): Interactive timeline focusing on evolution from Sales Support to Tech Consultant.
+           3. Competencies (Skills): Data visualization of the hybrid skill set (Admin vs. Tech).
+           4. Credentials (Edu/Certs/Awards): The validation layer.
+         - Logic: JS manages state switching, chart rendering, and dynamic filtering of content.
+    -->
+    <!-- Visualization & Content Choices:
+         - Skills Radar Chart: To visually demonstrate the "Hybrid" nature (Admin + Tech + Soft Skills) discussed in the report.
+         - Tools Proficiency Bar Chart: To quantify the "Tech-Savvy" claim.
+         - Interactive Timeline: To organize the chronological experience in a digestible way without wall-of-text.
+         - Highlights Cards: To break down the "Destaques Profissionais" into bite-sized stats/facts.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; /* Base height */
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container { height: 350px; }
+        }
+        .timeline-line {
+            position: absolute;
+            left: 1rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #cbd5e1;
+            z-index: 0;
+        }
+        .tab-btn.active {
+            border-bottom: 2px solid #1e293b;
+            color: #1e293b;
+            font-weight: 600;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header / Hero Section -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Luiz Gabriel</h1>
+                <p class="text-sm text-slate-500 font-medium">Administrative Assistant | Tech-Savvy Ops | Process Automation</p>
+            </div>
+            <div class="flex gap-3 text-sm">
+                <a href="mailto:luizgabrsm@gmail.com" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md transition-colors">Email</a>
+                <a href="https://linkedin.com/in/luizgabr" target="_blank" class="px-4 py-2 bg-[#0077b5] hover:bg-[#005582] text-white rounded-md transition-colors">LinkedIn</a>
+                <span class="px-4 py-2 bg-emerald-100 text-emerald-800 rounded-md border border-emerald-200 text-xs flex items-center">
+                    🟢 Available Immediately
+                </span>
+            </div>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <nav class="max-w-6xl mx-auto px-4 mt-2">
+            <div class="flex gap-6 overflow-x-auto no-scrollbar border-b border-slate-200">
+                <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active pb-3 px-1 text-sm text-slate-500 hover:text-slate-800 whitespace-nowrap">Overview</button>
+                <button onclick="switchTab('experience')" id="tab-experience" class="tab-btn pb-3 px-1 text-sm text-slate-500 hover:text-slate-800 whitespace-nowrap">Journey & Experience</button>
+                <button onclick="switchTab('skills')" id="tab-skills" class="tab-btn pb-3 px-1 text-sm text-slate-500 hover:text-slate-800 whitespace-nowrap">Skills & Tech</button>
+                <button onclick="switchTab('education')" id="tab-education" class="tab-btn pb-3 px-1 text-sm text-slate-500 hover:text-slate-800 whitespace-nowrap">Education & Awards</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-5xl mx-auto px-4 py-8 w-full">
+
+        <!-- VIEW: OVERVIEW -->
+        <section id="view-overview" class="view-section fade-in space-y-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <h2 class="text-xl font-bold text-slate-800 mb-4">Executive Summary</h2>
+                <p class="text-slate-600 leading-relaxed">
+                    Hybrid professional with solid experience in <strong>administrative support and project management</strong> within multinational firms (KPMG, Atos), combined with technical ability to automate routines and organize complex data. Specialized in transforming manual processes into efficient flows, ensuring accuracy and saving time for teams.
+                </p>
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                        <div class="text-blue-600 text-2xl mb-1 font-bold">5+</div>
+                        <div class="text-xs text-blue-800 font-semibold uppercase tracking-wide">Years of Experience</div>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
+                        <div class="text-purple-600 text-2xl mb-1 font-bold">3</div>
+                        <div class="text-xs text-purple-800 font-semibold uppercase tracking-wide">Tech Certifications</div>
+                    </div>
+                    <div class="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                        <div class="text-amber-600 text-2xl mb-1 font-bold">3</div>
+                        <div class="text-xs text-amber-800 font-semibold uppercase tracking-wide">Excellence Awards</div>
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                        <div class="text-emerald-600 text-2xl mb-1 font-bold">100%</div>
+                        <div class="text-xs text-emerald-800 font-semibold uppercase tracking-wide">Focus on Solutions</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Highlights -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span>🚀</span> Strategic Highlights
+                    </h3>
+                    <ul class="space-y-4">
+                        <li class="flex gap-3">
+                            <span class="text-blue-500 font-bold">•</span>
+                            <span class="text-sm text-slate-600"><strong>Agile Management:</strong> Expertise in Kanban, Scrum, and Azure DevOps for organizing complex workflows.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-green-500 font-bold">•</span>
+                            <span class="text-sm text-slate-600"><strong>Sustainability (ESG):</strong> Leadership of an award-winning Decarbonization project.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-indigo-500 font-bold">•</span>
+                            <span class="text-sm text-slate-600"><strong>Automation:</strong> Use of Power Automate to optimize administrative routines and reporting.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Languages -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span>🌐</span> Languages
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-medium text-slate-700">Portuguese</span>
+                                <span class="text-slate-500">Native</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-medium text-slate-700">English</span>
+                                <span class="text-slate-500">Professional</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-medium text-slate-700">Spanish</span>
+                                <span class="text-slate-500">Intermediate</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2">
+                                <div class="bg-yellow-500 h-2 rounded-full" style="width: 45%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: EXPERIENCE -->
+        <section id="view-experience" class="view-section hidden fade-in">
+            <div class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                <p class="text-sm text-blue-900">
+                    <strong>Professional Journey:</strong> An evolving career trajectory that started in sales support, moved through systems analysis and technical project management, and now focuses on operational and administrative excellence.
+                </p>
+            </div>
+
+            <div class="relative pl-4">
+                <div class="timeline-line"></div>
+                
+                <!-- Item 1 -->
+                <div class="relative pl-8 pb-10 group">
+                    <div class="absolute left-0 top-1 w-6 h-6 bg-slate-800 rounded-full border-4 border-white shadow-sm z-10"></div>
+                    <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleDetails('exp1')">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
+                            <h3 class="font-bold text-lg text-slate-800">Digital Operations Specialist (Freelance)</h3>
+                            <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-1 rounded">Mar 2023 – Present</span>
+                        </div>
+                        <p class="text-slate-600 text-sm mb-3">Operational Management and Process Automation</p>
+                        <div id="exp1" class="hidden text-sm text-slate-600 border-t border-slate-100 pt-3 space-y-2">
+                            <p>✅ <strong>Operational Management:</strong> Managed end-to-end administrative routines (invoicing, scheduling, digital correspondence).</p>
+                            <p>✅ <strong>Automation:</strong> Implemented automated workflows to reduce manual tasks and errors.</p>
+                            <p>✅ <strong>Support:</strong> Coordinated content schedules and digital support channels.</p>
+                        </div>
+                        <button class="text-xs text-blue-600 font-medium mt-2 hover:underline">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="relative pl-8 pb-10 group">
+                    <div class="absolute left-0 top-1 w-6 h-6 bg-blue-600 rounded-full border-4 border-white shadow-sm z-10"></div>
+                    <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleDetails('exp2')">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
+                            <h3 class="font-bold text-lg text-slate-800">Technology Consultant (Cloud & RPA)</h3>
+                            <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-1 rounded">KPMG Brasil | May 2022 – Dec 2022</span>
+                        </div>
+                        <p class="text-slate-600 text-sm mb-3">Strategic consulting and executive reporting.</p>
+                        <div id="exp2" class="hidden text-sm text-slate-600 border-t border-slate-100 pt-3 space-y-2">
+                            <p>✅ <strong>Executive Reporting:</strong> Prepared reports for the board on Cloud/RPA solutions.</p>
+                            <p>✅ <strong>Document Management:</strong> Standardized project documents for compliance.</p>
+                            <p>✅ <strong>Tech:</strong> Applied Azure and AI certifications to consulting practice.</p>
+                        </div>
+                        <button class="text-xs text-blue-600 font-medium mt-2 hover:underline">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="relative pl-8 pb-10 group">
+                    <div class="absolute left-0 top-1 w-6 h-6 bg-indigo-600 rounded-full border-4 border-white shadow-sm z-10"></div>
+                    <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleDetails('exp3')">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
+                            <h3 class="font-bold text-lg text-slate-800">Systems Analyst & Project Management Support</h3>
+                            <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-1 rounded">Atos | Jun 2021 – May 2022</span>
+                        </div>
+                        <p class="text-slate-600 text-sm mb-3">Agile PMO, Azure DevOps, and Technical Support.</p>
+                        <div id="exp3" class="hidden text-sm text-slate-600 border-t border-slate-100 pt-3 space-y-2">
+                            <p>✅ <strong>Agile Management:</strong> Organized Chatbot/AI pipeline via Kanban/Scrum.</p>
+                            <p>✅ <strong>Leadership:</strong> Conducted Dailys and client alignments (Vivo/VWCO).</p>
+                            <p>✅ <strong>Technical:</strong> Trained AI and RPA flows.</p>
+                        </div>
+                        <button class="text-xs text-blue-600 font-medium mt-2 hover:underline">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="relative pl-8 pb-10 group">
+                    <div class="absolute left-0 top-1 w-6 h-6 bg-indigo-400 rounded-full border-4 border-white shadow-sm z-10"></div>
+                    <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleDetails('exp4')">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
+                            <h3 class="font-bold text-lg text-slate-800">Strategic Sales & Alliances Support</h3>
+                            <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-1 rounded">Atos | Jul 2020 – Jun 2021</span>
+                        </div>
+                        <p class="text-slate-600 text-sm mb-3">ESG project leadership and commercial support.</p>
+                        <div id="exp4" class="hidden text-sm text-slate-600 border-t border-slate-100 pt-3 space-y-2">
+                            <p>🏆 <strong>Innovation Award:</strong> SMART Project (Reverse Logistics/Decarbonization).</p>
+                            <p>✅ <strong>Cloud Ops:</strong> Administrative follow-up for AWS/Azure/GCP projects.</p>
+                            <p>✅ <strong>Events:</strong> Coordinated workshops and training sessions.</p>
+                        </div>
+                        <button class="text-xs text-blue-600 font-medium mt-2 hover:underline">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="relative pl-8 group">
+                    <div class="absolute left-0 top-1 w-6 h-6 bg-slate-400 rounded-full border-4 border-white shadow-sm z-10"></div>
+                    <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-100 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleDetails('exp5')">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
+                            <h3 class="font-bold text-lg text-slate-800">Sales Support Assistant</h3>
+                            <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-1 rounded">Instituto Racine | Mar 2019 – Jun 2020</span>
+                        </div>
+                        <p class="text-slate-600 text-sm mb-3">Data intelligence and performance analysis.</p>
+                        <div id="exp5" class="hidden text-sm text-slate-600 border-t border-slate-100 pt-3 space-y-2">
+                            <p>✅ <strong>Data:</strong> Structured complex spreadsheets for lead qualification.</p>
+                            <p>✅ <strong>Analysis:</strong> Reported on digital campaign conversion rates.</p>
+                        </div>
+                        <button class="text-xs text-blue-600 font-medium mt-2 hover:underline">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: SKILLS -->
+        <section id="view-skills" class="view-section hidden fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Radar Chart Card -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Hybrid Profile</h3>
+                    <p class="text-sm text-slate-500 mb-6">Balance between administrative, technical, and management capabilities.</p>
+                    <div class="chart-container">
+                        <canvas id="skillsRadar"></canvas>
+                    </div>
+                </div>
+
+                <!-- Tools Bar Chart Card -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Tool Proficiency</h3>
+                    <p class="text-sm text-slate-500 mb-6">Level of technical mastery across key platforms.</p>
+                    <div class="chart-container">
+                        <canvas id="toolsBar"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills List Grid -->
+            <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <h4 class="font-bold text-slate-700 mb-2">Productivity</h4>
+                    <ul class="text-sm text-slate-600 space-y-1">
+                        <li>• Microsoft Office 365</li>
+                        <li>• Advanced Excel</li>
+                        <li>• Google Workspace</li>
+                        <li>• PowerPoint</li>
+                    </ul>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <h4 class="font-bold text-slate-700 mb-2">Management & CRM</h4>
+                    <ul class="text-sm text-slate-600 space-y-1">
+                        <li>• Salesforce & Dynamics</li>
+                        <li>• Azure DevOps</li>
+                        <li>• Trello & Planner</li>
+                        <li>• Calendar Management</li>
+                    </ul>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <h4 class="font-bold text-slate-700 mb-2">Technical & Cloud</h4>
+                    <ul class="text-sm text-slate-600 space-y-1">
+                        <li>• Power Automate (RPA)</li>
+                        <li>• Azure Fundamentals</li>
+                        <li>• Chatbots (BLiP)</li>
+                        <li>• AWS / GCP (Concepts)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: EDUCATION -->
+        <section id="view-education" class="view-section hidden fade-in">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Education Column -->
+                <div class="lg:col-span-2 space-y-6">
+                    <h3 class="text-xl font-bold text-slate-800 border-b pb-2">Academic Background</h3>
+                    
+                    <div class="bg-white p-5 rounded-lg border-l-4 border-slate-800 shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-lg text-slate-800">MBA in Project Management</h4>
+                                <p class="text-slate-600">Centro Universitário FMU</p>
+                            </div>
+                            <span class="text-sm font-semibold bg-slate-100 px-2 py-1 rounded">2024</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-lg border-l-4 border-slate-600 shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-lg text-slate-800">Associate's Degree in Systems Analysis and Development</h4>
+                                <p class="text-slate-600">FIAP</p>
+                            </div>
+                            <span class="text-sm font-semibold bg-slate-100 px-2 py-1 rounded">2023</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-lg border-l-4 border-slate-400 shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-lg text-slate-800">Associate's Degree in IT Management</h4>
+                                <p class="text-slate-600">Centro Universitário Senac</p>
+                            </div>
+                            <span class="text-sm font-semibold bg-slate-100 px-2 py-1 rounded">2021</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-slate-800 border-b pb-2 pt-4">Certifications</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-sm font-medium border border-blue-100">Microsoft Certified: Azure Fundamentals (AZ-900)</span>
+                        <span class="bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-sm font-medium border border-blue-100">Microsoft Certified: Azure AI Fundamentals (AI-900)</span>
+                        <span class="bg-indigo-50 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium border border-indigo-100">Take Blip Certified Professional</span>
+                    </div>
+                </div>
+
+                <!-- Awards Column -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold text-slate-800 border-b pb-2">Honors & Awards</h3>
+                    
+                    <div class="bg-amber-50 p-5 rounded-xl border border-amber-100 text-center relative overflow-hidden">
+                        <div class="text-4xl mb-2">🏆</div>
+                        <h4 class="font-bold text-slate-800 mb-1">Innovation Champion</h4>
+                        <p class="text-xs font-bold text-amber-700 uppercase mb-2">SMART Project</p>
+                        <p class="text-sm text-slate-600">1st place for a Sustainability/Decarbonization project presented to the Atos Executive Board.</p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
+                        <h4 class="font-bold text-slate-800 mb-1">⭐ Excellence in Client Delivery</h4>
+                        <p class="text-sm text-slate-600">Recognition for outstanding performance in executing critical technology projects.</p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
+                        <h4 class="font-bold text-slate-800 mb-1">🤝 Interpersonal Excellence Award</h4>
+                        <p class="text-sm text-slate-600">Awarded for communication skills and ability to foster positive team relationships.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-6 mt-8">
+        <div class="max-w-6xl mx-auto px-4 text-center text-sm">
+            <p>&copy; 2025 Luiz Gabriel. Interactive Profile.</p>
+            <p class="mt-2 text-xs">Developed with a focus on UX and Data Analysis.</p>
+        </div>
+    </footer>
+
+    <script>
+        // State Management
+        const state = {
+            currentTab: 'overview'
+        };
+
+        // DOM Elements
+        const tabs = ['overview', 'experience', 'skills', 'education'];
+
+        // Navigation Function
+        function switchTab(tabId) {
+            // Update State
+            state.currentTab = tabId;
+
+            // Update Buttons
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabId) {
+                    btn.classList.add('active', 'text-slate-800');
+                    btn.classList.remove('text-slate-500');
+                } else {
+                    btn.classList.remove('active', 'text-slate-800');
+                    btn.classList.add('text-slate-500');
+                }
+            });
+
+            // Update Content
+            tabs.forEach(t => {
+                const section = document.getElementById(`view-${t}`);
+                if (t === tabId) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+
+            // Trigger chart render if skills tab is selected and charts aren't rendered
+            if (tabId === 'skills') {
+                renderCharts();
+            }
+        }
+
+        // Interaction: Expand Experience Details
+        function toggleDetails(id) {
+            const el = document.getElementById(id);
+            const isHidden = el.classList.contains('hidden');
+            if (isHidden) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        // Chart Initialization
+        let chartsRendered = false;
+
+        function renderCharts() {
+            if (chartsRendered) return;
+
+            // Radar Chart: Hybrid Profile
+            const radarCtx = document.getElementById('skillsRadar').getContext('2d');
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Administrative', 'Agile Management', 'Technology/Cloud', 'Automation (RPA)', 'Communication', 'Data Analysis'],
+                    datasets: [{
+                        label: 'Competency Level',
+                        data: [90, 85, 80, 85, 95, 88],
+                        fill: true,
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: 'rgb(59, 130, 246)',
+                        pointBackgroundColor: 'rgb(59, 130, 246)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(59, 130, 246)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#e2e8f0' },
+                            pointLabels: {
+                                font: { size: 12, family: "'Inter', sans-serif" },
+                                color: '#475569'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // Bar Chart: Tools Proficiency
+            const barCtx = document.getElementById('toolsBar').getContext('2d');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Advanced Excel', 'Power Automate', 'Azure DevOps', 'Salesforce/CRM', 'Google Workspace', 'BLiP Chatbots'],
+                    datasets: [{
+                        label: 'Proficiency',
+                        data: [95, 90, 85, 80, 95, 85],
+                        backgroundColor: [
+                            '#10b981', // Excel - Green
+                            '#3b82f6', // Power Auto - Blue
+                            '#6366f1', // Azure - Indigo
+                            '#0ea5e9', // Salesforce - Sky
+                            '#f59e0b', // Google - Amber
+                            '#8b5cf6'  // BLiP - Violet
+                        ],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            max: 100,
+                            ticks: { display: false }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { family: "'Inter', sans-serif" }, color: '#475569' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            chartsRendered = true;
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            switchTab('overview');
+        });
+
+    </script>
+</body>
+</html>
